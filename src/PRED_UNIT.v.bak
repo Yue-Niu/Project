@@ -1,0 +1,74 @@
+/*
+	这个模块就是角度预测计算的核心模块，其中是完全没有用到乘法器的，
+	都是用移位和加法器的组合
+*/
+module PRED_UNIT
+(
+	input	[7:0]	WEIGHT,
+	
+	input	[7:0]	REF1,
+	input [7:0]	REF2,
+	
+	output PRED_OUT
+);
+
+/*
+	下面的模块就是化乘法为加法和移位的核心模块
+	手稿1页
+*/
+	//REF1
+	wire [12:0]	REF1_0,REF1_1,REF1_2,REF1_3,REF1_4,REF1_5;
+	wire [12:0]	REF1_MUX0,REF1_MUX1,REF1_MUX2,REF1_MUX3,REF1_MUX4,REF1_MUX5;
+	wire [12:0]	REF1_MUL;
+	
+	assign REF1_0 = {5'd0,REF1};
+	assign REF1_1 = {4'd0,REF1,1'd0};
+	assign REF1_2 = {3'd0,REF1,2'd0};
+	assign REF1_3 = {2'd0,REF1,3'd0};
+	assign REF1_4 = {1'd0,REF1,4'd0};
+	assign REF1_5 = {REF1,5'd0};
+	
+	assign REF1_MUX0 = WEIGHT[0]==1 ? REF1_0 : 13'd0;
+	assign REF1_MUX1 = WEIGHT[1]==1 ? REF1_1 : 13'd0;
+	assign REF1_MUX2 = WEIGHT[2]==1 ? REF1_2 : 13'd0;
+	assign REF1_MUX3 = WEIGHT[3]==1 ? REF1_3 : 13'd0;
+	assign REF1_MUX4 = WEIGHT[4]==1 ? REF1_4 : 13'd0;
+	assign REF1_MUX5 = WEIGHT[5]==1 ? REF1_5 : 13'd0;
+	
+	assign REF1_MUL = REF1_MUX0 + REF1_MUX1 + REF1_MUX2 + REF1_MUX3 + REF1_MUX4 + REF1_MUX5;
+	
+	//REF2
+	wire [12:0]	REF2_0,REF2_1,REF2_2,REF2_3,REF2_4,REF2_5;
+	wire [12:0]	REF2_MUX0,REF2_MUX1,REF2_MUX2,REF2_MUX3,REF2_MUX4,REF2_MUX5;
+	wire [12:0]	REF2_MUL;
+	wire [7:0]  weight2;
+	
+	assign weight2 = 8'd32 - WEIGHT;
+	
+	assign REF2_0 = {5'd0,REF2};
+	assign REF2_1 = {4'd0,REF2,1'd0};
+	assign REF2_2 = {3'd0,REF2,2'd0};
+	assign REF2_3 = {2'd0,REF2,3'd0};
+	assign REF2_4 = {1'd0,REF2,4'd0};
+	assign REF2_5 = {REF2,5'd0};
+	
+	assign REF2_MUX0 = weight2[0]==1 ? REF2_0 : 13'd0;
+	assign REF2_MUX1 = weight2[1]==1 ? REF2_1 : 13'd0;
+	assign REF2_MUX2 = weight2[2]==1 ? REF2_2 : 13'd0;
+	assign REF2_MUX3 = weight2[3]==1 ? REF2_3 : 13'd0;
+	assign REF2_MUX4 = weight2[4]==1 ? REF2_4 : 13'd0;
+	assign REF2_MUX5 = weight2[5]==1 ? REF2_5 : 13'd0;
+	
+	assign REF2_MUL = REF2_MUX0 + REF2_MUX1 + REF2_MUX2 + REF2_MUX3 + REF2_MUX4 + REF2_MUX5;
+	
+/*
+	下面是角度预测的核心算法
+*/
+
+	wire [12:0] pred_out_buf;
+	
+	assign pred_out_buf = (REF1_MUL + REF2_MUL + 13'd16)>>5;
+	
+	assign PRED_OUT = pred_out_buf[7:0];
+	
+endmodule

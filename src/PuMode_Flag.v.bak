@@ -1,0 +1,25 @@
+/*
+	这个模块由输入的PU和MODE信号来确定哪些是负角度预测，哪些需要滤波
+*/
+module PuMode_Flag
+(
+	input [2:0]		PU,
+	input	[5:0]		MODE,
+	
+	output			filter_flag,
+	output			negetive_flag
+);
+
+	always @(PU or MODE)
+	begin
+		case(PU)
+			3'd0:
+			begin
+			case(MODE)
+				6'd2:
+				begin
+				end
+			endcase
+			end
+		endcase
+	end

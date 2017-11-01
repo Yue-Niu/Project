@@ -1,0 +1,25 @@
+/*
+	整个角度预测的外部状态机
+*/
+module ANGLE_PRED_CONTROL
+(
+	input		CLK1,
+	input		RST_n,
+	
+	input vh_i,
+	input [2:0]	PU,
+	input [5:0]	MODE,
+	
+	output [5:0] X,
+	output [5:0] Y,
+	output [8:0] ADDR
+);
+
+/*
+	状态机总共有256个工作状态，分别对应不同的基本预测块，
+	另外还有一个闲置状态
+*/
+	parameter idle = 9'd0,
+				 S1 = 9'd1, S2 = 9'd2, S3 = 9'd3, S4 = 9'd4, S5 = 9'd5, S6 = 9'd6, S7 = 9'd7, S8 = 9'd8,
+				 S9 = 9'd9, S10 = 9'd10, S11 = 9'd11, S12 = 9'd12, S13 = 9'd13, S14 = 9'd14, S15 = 9'd15, S16 = 9'd16,
+				 S17 = 9'd17, S18 = 9'd18, S19 = 9'd19, S20 = 9'd20, S21 = 9'd21, S22 = 9'd22, S23 = 9'd23, S16 = 9'd16,

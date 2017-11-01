@@ -1,0 +1,89 @@
+// 这个模块对应的是Planar预测的address产生
+module address_abitrate_planar
+(
+	input			CLK，
+	input 		RST_n,
+	input [2:0]	PU,
+	input			preset_flag,
+	
+	input	[5:0]	X,
+	input [5:0]	Y,
+	
+	output [7:0]	ADDRESS_RAM,
+	
+	output 		EN_TOP,
+	output		EN_LEFT
+);
+
+	wire [7:0] X_end,Y_end;
+	
+	assign X_end = {2'b00,X} + 8'd4;
+	assign Y_end = (2'b00,Y) + 8'd4;
+	
+	reg [7:0] N;
+	
+	always @(PU)
+	begin
+		case(PU)
+			3'd0:
+				N <= 8'd4;
+			3'd1:
+				N <= 8'd8;
+			3'd2:
+				N <= 8'd16;
+			3'd3:
+				N <= 8'd32;
+			default:
+				N <= 8'd64;
+		endcase
+	end
+
+	always @(posedge CLK or negedge RST_n)
+	begin
+		if(RST_n==1'b0)
+		begin
+			ADDRESS_RAM <= 8'd0;
+			EN_TOP <= 1'b0;
+			EN_LEFT <= 1'b0;
+		end
+		else
+		begin
+			if(preset_flag==1'b1)
+			begin
+				ADDRESS_RAM <= {2'b00,X};
+				EN_TOP <= 1'b1;
+				EN_LEFT <= 1'b0;
+			end
+			else
+			begin
+				if(ADDRESS_RAM==X_end && EN_TOP==1'b1)
+				begin
+					ADDRESS_RAM <= N;
+					EN_TOP <= 1'b1;
+					EN_LEFT <= 1'b0;
+				end
+				else if(ADDRESS_RAM==N && EN_TOP==1'b1)
+				begin
+					ADDRESS_RAM <= {2'b00,Y};
+					EN_TOP <= 1'b0;
+					EN_LEFT <= 1'b1;
+				end
+				else if(ADDRESS_RAM==Y_end && EN_LEFT==1'b1)
+				begin
+					ADDRESS_RAM <= N;
+					EN_TOP <= 1'b0;
+					EN_LEFT <= 1'b1;
+				end
+				else if(ADDRESS_RAM==N && EN_LEFT==1'b1)
+				begin
+					ADDRESS_RAM <= 8'd0;
+					EN_TOP <= 1'b0;
+					EN_LEFT <= 1'b0;
+				end
+				else
+					ADDRESS_RAM <= ADDRESS_RAM + 1'b1;
+			end
+		end
+	end
+	
+endmodule

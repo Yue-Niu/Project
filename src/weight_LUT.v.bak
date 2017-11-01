@@ -1,0 +1,41 @@
+// This is a module for weight LUT
+module weight_LUT
+(
+	input				clk,
+	input [8:0]		address,
+	
+	output [7:0]	LUT_out1,
+	output [7:0]	LUT_out2,
+	output [7:0]	LUT_out3,
+	output [7:0]	LUT_out4
+);
+
+	weight1_LUT weight1(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out1)
+		);
+		
+	weight2_LUT weight2(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out2)
+		);
+		
+	weight3_LUT weight3(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out3)
+		);
+		
+	weight4_LUT weight4(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out4)
+		);
+		
+endmodule

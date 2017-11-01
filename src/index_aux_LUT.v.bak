@@ -1,0 +1,41 @@
+// This is a module for index auxiliary LUT
+module index_aux_LUT
+(
+	input				clk,
+	input [8:0]		address,
+	
+	output [7:0]	LUT_out1,
+	output [7:0]	LUT_out2,
+	output [7:0]	LUT_out3,
+	output [7:0]	LUT_out4
+);
+
+	index_aux1_LUT weight1(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out1)
+		);
+		
+	index_aux2_LUT weight2(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out2)
+		);
+		
+	index_aux3_LUT weight3(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out3)
+		);
+		
+	index_aux4_LUT weight4(
+		.clock(clk),
+		.address(address),
+		
+		.q(LUT_out4)
+		);
+		
+endmodule

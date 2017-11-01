@@ -1,0 +1,125 @@
+//In this module, we calculate the final address for
+//reference selection
+module ref_address
+(
+	input 				vh_i, //vertical or horizontal prediction
+	input [7:0]			index1,
+	input [7:0]			index2,
+	input [7:0]			index3,
+	input [7:0]			index4, //these are index from LUT
+	
+	input [7:0]			index_aux1,
+	input [7:0]			index_aux2,
+	input [7:0]			index_aux3,
+	input [7:0]			index_aux4,
+	
+	input [7:0]			X,
+	input [7:0]			Y, //these are location for current prediction block
+	
+	output 				top_or_left11,
+	output 				top_or_left14,
+	output 				top_or_left41,
+	output				top_or_left44,
+	output reg[7:0]	address11,
+	output reg[7:0]	address12,
+	output reg[7:0]	address13,
+	output reg[7:0]	address14,
+	output reg[7:0]	address21,
+	output reg[7:0]	address22,
+	output reg[7:0]	address23,
+	output reg[7:0]	address24,
+	output reg[7:0]	address31,
+	output reg[7:0]	address32,
+	output reg[7:0]	address33,
+	output reg[7:0]	address34,
+	output reg[7:0]	address41,
+	output reg[7:0]	address42,
+	output reg[7:0]	address43,
+	output reg[7:0]	address44
+);
+
+	//first, add index and location according to prediction mode
+	wire [7:0]	address_first1, address_first2, address_first3, address_first4;
+	
+	assign address_first1 = index1 + (vh_i==1'b1 ? X : Y);
+	assign address_first2 = index2 + (vh_i==1'b1 ? X : Y);
+	assign address_first3 = index3 + (vh_i==1'b1 ? X : Y);
+	assign address_first4 = index4 + (vh_i==1'b1 ? X : Y);
+	
+	//second, check whether address is negetive
+	reg [7:0]	address_second1, address_second2, address_second3, address_second4;
+	
+	always @(vh_i or address_first1 or address_first2 or address_first3 or address_first4 or
+				X or Y or index_aux1 or index_aux2 or index_aux3 or index_aux4)
+	begin
+		address_second1 = 8'd0;
+		address_second2 = 8'd0;
+		address_second3 = 8'd0;
+		address_second4 = 8'd0;
+		if(address_first1[7]==1'b1)
+			address_second1 = index_aux1 + (vh_i==1'b1 ? Y : X);
+		else if(address_first2[7]==1'b1)
+			address_second2 = index_aux2 + (vh_i==1'b1 ? Y : X);
+		else if(address_first3[7]==1'b1)
+			address_second3 = index_aux3 + (vh_i==1'b1 ? Y : X);
+		else if(address_first4[7]==1'b1)
+			address_second4 = index_aux4 + (vh_i==1'b1 ? Y : X);
+		else
+		begin
+			address_second1 = address_first1;
+			address_second2 = address_first2;
+			address_second3 = address_first3;
+			address_second4 = address_first4;
+		end
+	end
+	
+	//third, get the final address
+	always @(vh_i or address_second1 or address_second2 or address_second3 or address_second4)
+	begin
+		if(vh_i==1'b1)
+		begin
+			address11 = address_second1;
+			address12 = address_second1 + 8'd1;
+			address13 = address_second1 + 8'd2;
+			address14 = address_second1 + 8'd3;
+			address21 = address_second2;
+			address22 = address_second2 + 8'd1;
+			address23 = address_second2 + 8'd2;
+			address24 = address_second2 + 8'd3;
+			address31 = address_second3;
+			address32 = address_second3 + 8'd1;
+			address33 = address_second3 + 8'd2;
+			address34 = address_second3 + 8'd3;
+			address41 = address_second4;
+			address42 = address_second4 + 8'd1;
+			address43 = address_second4 + 8'd2;
+			address44 = address_second4 + 8'd3;
+		end
+		else
+		begin
+			address11 = address_second1;
+			address21 = address_second1 + 8'd1;
+			address31 = address_second1 + 8'd2;
+			address41 = address_second1 + 8'd3;
+			address12 = address_second2;
+			address22 = address_second2 + 8'd1;
+			address32 = address_second2 + 8'd2;
+			address42 = address_second2 + 8'd3;
+			address13 = address_second3;
+			address23 = address_second3 + 8'd1;
+			address33 = address_second3 + 8'd2;
+			address43 = address_second3 + 8'd3;
+			address14 = address_second4;
+			address24 = address_second4 + 8'd1;
+			address34 = address_second4 + 8'd2;
+			address44 = address_second4 + 8'd3;
+		end
+	end
+	
+	//four, top_or_left for address11 and address44
+	assign top_or_left11 = vh_i;
+	assign top_or_left14 = (vh_i==1'b1 && address14[7]==1'b0) || (vh_i==1'b0 && address14[7]==1'b1);
+	assign top_or_left41 = (vh_i==1'b1 && address41[7]==1'b0) || (vh_i==1'b0 && address41[7]==1'b1);
+	assign top_or_left44 = (vh_i==1'b1 && address44[7]==1'b0) || (vh_i==1'b0 && address44[7]==1'b1);
+
+endmodule	

@@ -1,0 +1,1196 @@
+/*
+	这个模块通过例化PRED_CALC来预测16个像素
+*/
+module PRED_16PIX
+(
+	input [2:0]	PU,
+	input complete_flag_angle,
+	input complete_flag_planar,
+	input angle_or_planar,
+	input TOP_or_LEFT1_11,
+	input TOP_or_LEFT1_12,
+	input TOP_or_LEFT1_13,
+	input TOP_or_LEFT1_14,
+	input TOP_or_LEFT1_21,
+	input TOP_or_LEFT1_22,
+	input TOP_or_LEFT1_23,
+	input TOP_or_LEFT1_24,
+	input TOP_or_LEFT1_31,
+	input TOP_or_LEFT1_32,
+	input TOP_or_LEFT1_33,
+	input TOP_or_LEFT1_34,
+	input TOP_or_LEFT1_41,
+	input TOP_or_LEFT1_42,
+	input TOP_or_LEFT1_43,
+	input TOP_or_LEFT1_44,
+	
+	input TOP_or_LEFT2_11,
+	input TOP_or_LEFT2_12,
+	input TOP_or_LEFT2_13,
+	input TOP_or_LEFT2_14,
+	input TOP_or_LEFT2_21,
+	input TOP_or_LEFT2_22,
+	input TOP_or_LEFT2_23,
+	input TOP_or_LEFT2_24,
+	input TOP_or_LEFT2_31,
+	input TOP_or_LEFT2_32,
+	input TOP_or_LEFT2_33,
+	input TOP_or_LEFT2_34,
+	input TOP_or_LEFT2_41,
+	input TOP_or_LEFT2_42,
+	input TOP_or_LEFT2_43,
+	input TOP_or_LEFT2_44,
+	
+	input [7:0]		REF_TOP0,
+	input [7:0]		REF_TOP1,
+	input [7:0]		REF_TOP2,
+	input [7:0]		REF_TOP3,
+	input [7:0]		REF_TOP4,
+	input [7:0]		REF_TOP5,
+	input [7:0]		REF_TOP6,
+	input [7:0]		REF_TOP7,
+	
+	input [7:0]		REF_TOP0a,
+	input [7:0]		REF_TOP1a,
+	input [7:0]		REF_TOP2a,
+	input [7:0]		REF_TOP3a,
+	input [7:0]		REF_TOP4a,
+	input [7:0]		REF_TOP5a,
+	input [7:0]		REF_TOP6a,
+	input [7:0]		REF_TOP7a,
+	
+	input [7:0]		REF_LEFT0,
+	input [7:0]		REF_LEFT1,
+	input [7:0]		REF_LEFT2,
+	input [7:0]		REF_LEFT3,
+	input [7:0]		REF_LEFT4,
+	input [7:0]		REF_LEFT5,
+	input [7:0]		REF_LEFT6,
+	input [7:0]		REF_LEFT7,
+	
+	input [7:0]		REF_LEFT0a,
+	input [7:0]		REF_LEFT1a,
+	input [7:0]		REF_LEFT2a,
+	input [7:0]		REF_LEFT3a,
+	input [7:0]		REF_LEFT4a,
+	input [7:0]		REF_LEFT5a,
+	input [7:0]		REF_LEFT6a,
+	input [7:0]		REF_LEFT7a,
+	
+	input [7:0]		ADDR1_11,
+	input [7:0]		ADDR1_12,
+	input [7:0]		ADDR1_13,
+	input [7:0]		ADDR1_14,
+	input [7:0]		ADDR1_21,
+	input [7:0]		ADDR1_22,
+	input [7:0]		ADDR1_23,
+	input [7:0]		ADDR1_24,
+	input [7:0]		ADDR1_31,
+	input [7:0]		ADDR1_32,
+	input [7:0]		ADDR1_33,
+	input [7:0]		ADDR1_34,
+	input [7:0]		ADDR1_41,
+	input [7:0]		ADDR1_42,
+	input [7:0]		ADDR1_43,
+	input [7:0]		ADDR1_44,
+	
+	input [7:0]		ADDR2_11,
+	input [7:0]		ADDR2_12,
+	input [7:0]		ADDR2_13,
+	input [7:0]		ADDR2_14,
+	input [7:0]		ADDR2_21,
+	input [7:0]		ADDR2_22,
+	input [7:0]		ADDR2_23,
+	input [7:0]		ADDR2_24,
+	input [7:0]		ADDR2_31,
+	input [7:0]		ADDR2_32,
+	input [7:0]		ADDR2_33,
+	input [7:0]		ADDR2_34,
+	input [7:0]		ADDR2_41,
+	input [7:0]		ADDR2_42,
+	input [7:0]		ADDR2_43,
+	input [7:0]		ADDR2_44,
+	
+	input [7:0]		WEIGHT1_11,
+	input [7:0]		WEIGHT1_12,
+	input [7:0]		WEIGHT1_13,
+	input [7:0]		WEIGHT1_14,
+	input [7:0]		WEIGHT1_21,
+	input [7:0]		WEIGHT1_22,
+	input [7:0]		WEIGHT1_23,
+	input [7:0]		WEIGHT1_24,
+	input [7:0]		WEIGHT1_31,
+	input [7:0]		WEIGHT1_32,
+	input [7:0]		WEIGHT1_33,
+	input [7:0]		WEIGHT1_34,
+	input [7:0]		WEIGHT1_41,
+	input [7:0]		WEIGHT1_42,
+	input [7:0]		WEIGHT1_43,
+	input [7:0]		WEIGHT1_44,
+	input [7:0]		WEIGHT2_11,
+	input [7:0]		WEIGHT2_12,
+	input [7:0]		WEIGHT2_13,
+	input [7:0]		WEIGHT2_14,
+	input [7:0]		WEIGHT2_21,
+	input [7:0]		WEIGHT2_22,
+	input [7:0]		WEIGHT2_23,
+	input [7:0]		WEIGHT2_24,
+	input [7:0]		WEIGHT2_31,
+	input [7:0]		WEIGHT2_32,
+	input [7:0]		WEIGHT2_33,
+	input [7:0]		WEIGHT2_34,
+	input [7:0]		WEIGHT2_41,
+	input [7:0]		WEIGHT2_42,
+	input [7:0]		WEIGHT2_43,
+	input [7:0]		WEIGHT2_44,
+	
+	output 			complete_flag,
+	output [7:0]	PRED_OUT11,
+	output [7:0]	PRED_OUT12,
+	output [7:0]	PRED_OUT13,
+	output [7:0]	PRED_OUT14,
+	output [7:0]	PRED_OUT21,
+	output [7:0]	PRED_OUT22,
+	output [7:0]	PRED_OUT23,
+	output [7:0]	PRED_OUT24,
+	output [7:0]	PRED_OUT31,
+	output [7:0]	PRED_OUT32,
+	output [7:0]	PRED_OUT33,
+	output [7:0]	PRED_OUT34,
+	output [7:0]	PRED_OUT41,
+	output [7:0]	PRED_OUT42,
+	output [7:0]	PRED_OUT43,
+	output [7:0]	PRED_OUT44
+);
+
+/*
+	接下来为每个预测像素例化一次像素选择和一次像素计算模块
+*/
+	assign complete_flag = angle_or_planar==1'b1 ? complete_flag_angle : complete_flag_planar;
+
+	//PRED_OUT11
+	wire [7:0]	ref11_1,ref11_2;
+	wire [7:0]	ref11_1a,ref11_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u11(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_11),
+		.TOP_or_LEFT2(TOP_or_LEFT2_11),
+		.ADDR_R1(ADDR1_11),
+		.ADDR_R2(ADDR2_11),
+		
+		.REF1(ref11_1),
+		.REF2(ref11_2),
+		.REF1a(ref11_1a),
+		.REF2a(ref11_2a)
+		);
+	PRED_UNIT PRED_UNIT_u11(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_11),
+		.WEIGHT2(WEIGHT2_11),
+		
+		.REF1(ref11_1),
+		.REF2(ref11_2),
+		.REF1a(ref11_1a),
+		.REF2a(ref11_2a),
+		
+		.PRED_OUT(PRED_OUT11)
+		);
+		
+	//PRED_OUT12
+	wire [7:0]	ref12_1,ref12_2;
+	wire [7:0]	ref12_1a,ref12_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u12(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_12),
+		.TOP_or_LEFT2(TOP_or_LEFT2_12),
+		.ADDR_R1(ADDR1_12),
+		.ADDR_R2(ADDR2_12),
+		
+		.REF1(ref12_1),
+		.REF2(ref12_2),
+		.REF1a(ref12_1a),
+		.REF2a(ref12_2a)
+		);
+	PRED_UNIT PRED_UNIT_u12(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_12),
+		.WEIGHT2(WEIGHT2_12),
+		
+		.REF1(ref12_1),
+		.REF2(ref12_2),
+		.REF1a(ref12_1a),
+		.REF2a(ref12_2a),
+		
+		.PRED_OUT(PRED_OUT12)
+		);
+		
+	//PRED_OUT13
+	wire [7:0]	ref13_1,ref13_2;
+	wire [7:0]	ref13_1a,ref13_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u13(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_13),
+		.TOP_or_LEFT2(TOP_or_LEFT2_13),
+		.ADDR_R1(ADDR1_13),
+		.ADDR_R2(ADDR1_13),
+		
+		.REF1(ref13_1),
+		.REF2(ref13_2),
+		.REF1a(ref13_1a),
+		.REF2a(ref13_2a)
+		);
+	PRED_UNIT PRED_UNIT_u13(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_13),
+		.WEIGHT2(WEIGHT2_13),
+		
+		.REF1(ref13_1),
+		.REF2(ref13_2),
+		.REF1a(ref13_1a),
+		.REF2a(ref13_2a),
+		
+		.PRED_OUT(PRED_OUT13)
+		);
+		
+	//PRED_OUT14
+	wire [7:0]	ref14_1,ref14_2;
+	wire [7:0]	ref14_1a,ref14_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u14(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_14),
+		.TOP_or_LEFT2(TOP_or_LEFT2_14),
+		.ADDR_R1(ADDR1_14),
+		.ADDR_R2(ADDR2_14),
+		
+		.REF1(ref14_1),
+		.REF2(ref14_2),
+		.REF1a(ref14_1a),
+		.REF2a(ref14_2a)
+		);
+	PRED_UNIT PRED_UNIT_u14(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_14),
+		.WEIGHT2(WEIGHT2_14),
+		
+		.REF1(ref14_1),
+		.REF2(ref14_2),
+		.REF1a(ref14_1a),
+		.REF2a(ref14_2a),
+		
+		.PRED_OUT(PRED_OUT14)
+		);
+		
+		
+	//PRED_OUT21
+	wire [7:0]	ref21_1,ref21_2;
+	wire [7:0]	ref21_1a,ref21_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u21(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_21),
+		.TOP_or_LEFT2(TOP_or_LEFT2_21),
+		.ADDR_R1(ADDR1_21),
+		.ADDR_R2(ADDR2_21),
+		
+		.REF1(ref21_1),
+		.REF2(ref21_2),
+		.REF1a(ref21_1a),
+		.REF2a(ref21_2a)
+		);
+	PRED_UNIT PRED_UNIT_u21(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_21),
+		.WEIGHT2(WEIGHT2_21),
+		
+		.REF1(ref21_1),
+		.REF2(ref21_2),
+		.REF1a(ref21_1a),
+		.REF2a(ref21_2a),
+		
+		.PRED_OUT(PRED_OUT21)
+		);
+		
+	//PRED_OUT12
+	wire [7:0]	ref22_1,ref22_2;
+	wire [7:0]	ref22_1a,ref22_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u22(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_22),
+		.TOP_or_LEFT2(TOP_or_LEFT2_22),
+		.ADDR_R1(ADDR1_22),
+		.ADDR_R2(ADDR2_22),
+		
+		.REF1(ref22_1),
+		.REF2(ref22_2),
+		.REF1a(ref22_1a),
+		.REF2a(ref22_2a)
+		);
+	PRED_UNIT PRED_UNIT_u22(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_22),
+		.WEIGHT2(WEIGHT2_22),
+		
+		.REF1(ref22_1),
+		.REF2(ref22_2),
+		.REF1a(ref22_1a),
+		.REF2a(ref22_2a),
+		
+		.PRED_OUT(PRED_OUT22)
+		);
+		
+	//PRED_OUT13
+	wire [7:0]	ref23_1,ref23_2;
+	wire [7:0]	ref23_1a,ref23_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u23(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_23),
+		.TOP_or_LEFT2(TOP_or_LEFT2_23),
+		.ADDR_R1(ADDR1_23),
+		.ADDR_R2(ADDR2_23),
+		
+		.REF1(ref23_1),
+		.REF2(ref23_2),
+		.REF1a(ref23_1a),
+		.REF2a(ref23_2a)
+		);
+	PRED_UNIT PRED_UNIT_u23(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_23),
+		.WEIGHT2(WEIGHT2_23),
+		
+		.REF1(ref23_1),
+		.REF2(ref23_2),
+		.REF1a(ref23_1a),
+		.REF2a(ref23_2a),
+		
+		.PRED_OUT(PRED_OUT23)
+		);
+		
+	//PRED_OUT14
+	wire [7:0]	ref24_1,ref24_2;
+	wire [7:0]	ref24_1a,ref24_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u24(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_24),
+		.TOP_or_LEFT2(TOP_or_LEFT2_24),
+		.ADDR_R1(ADDR1_24),
+		.ADDR_R2(ADDR2_24),
+		
+		.REF1(ref24_1),
+		.REF2(ref24_2),
+		.REF1a(ref24_1a),
+		.REF2a(ref24_2a)
+		);
+	PRED_UNIT PRED_UNIT_u24(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_24),
+		.WEIGHT2(WEIGHT2_24),
+		
+		.REF1(ref24_1),
+		.REF2(ref24_2),
+		.REF1a(ref24_1a),
+		.REF2a(ref24_2a),
+		
+		.PRED_OUT(PRED_OUT24)
+		);
+		
+	//PRED_OUT31
+	wire [7:0]	ref31_1,ref31_2;
+	wire [7:0]	ref31_1a,ref31_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u31(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_31),
+		.TOP_or_LEFT2(TOP_or_LEFT2_31),
+		.ADDR_R1(ADDR1_31),
+		.ADDR_R2(ADDR2_31),
+		
+		.REF1(ref31_1),
+		.REF2(ref31_2),
+		.REF1a(ref31_1a),
+		.REF2a(ref31_2a)
+		);
+	PRED_UNIT PRED_UNIT_u31(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_31),
+		.WEIGHT2(WEIGHT2_31),
+		
+		.REF1(ref31_1),
+		.REF2(ref31_2),
+		.REF1a(ref31_1a),
+		.REF2a(ref31_2a),
+		
+		.PRED_OUT(PRED_OUT31)
+		);
+		
+	//PRED_OUT12
+	wire [7:0]	ref32_1,ref32_2;
+	wire [7:0]	ref32_1a,ref32_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u32(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_32),
+		.TOP_or_LEFT2(TOP_or_LEFT2_32),
+		.ADDR_R1(ADDR1_32),
+		.ADDR_R2(ADDR2_32),
+		
+		.REF1(ref32_1),
+		.REF2(ref32_2),
+		.REF1a(ref32_1a),
+		.REF2a(ref32_2a)
+		);
+	PRED_UNIT PRED_UNIT_u32(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_32),
+		.WEIGHT2(WEIGHT2_32),
+		
+		.REF1(ref32_1),
+		.REF2(ref32_2),
+		.REF1a(ref32_1a),
+		.REF2a(ref32_2a),
+		
+		.PRED_OUT(PRED_OUT32)
+		);
+		
+	//PRED_OUT33
+	wire [7:0]	ref33_1,ref33_2;
+	wire [7:0]	ref33_1a,ref33_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u33(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_33),
+		.TOP_or_LEFT2(TOP_or_LEFT2_33),
+		.ADDR_R1(ADDR1_33),
+		.ADDR_R2(ADDR2_33),
+		
+		.REF1(ref33_1),
+		.REF2(ref33_2),
+		.REF1a(ref33_1a),
+		.REF2a(ref33_2a)
+		);
+	PRED_UNIT PRED_UNIT_u33(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_33),
+		.WEIGHT2(WEIGHT2_33),
+		
+		.REF1(ref33_1),
+		.REF2(ref33_2),
+		.REF1a(ref33_1a),
+		.REF2a(ref33_2a),
+		
+		.PRED_OUT(PRED_OUT33)
+		);
+		
+	//PRED_OUT14
+	wire [7:0]	ref34_1,ref34_2;
+	wire [7:0]	ref34_1a,ref34_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u34(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_34),
+		.TOP_or_LEFT2(TOP_or_LEFT2_34),
+		.ADDR_R1(ADDR1_34),
+		.ADDR_R2(ADDR2_34),
+		
+		.REF1(ref34_1),
+		.REF2(ref34_2),
+		.REF1a(ref34_1a),
+		.REF2a(ref34_2a)
+		);
+	PRED_UNIT PRED_UNIT_u34(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_34),
+		.WEIGHT2(WEIGHT2_34),
+		
+		.REF1(ref34_1),
+		.REF2(ref34_2),
+		.REF1a(ref34_1a),
+		.REF2a(ref34_2a),
+		
+		.PRED_OUT(PRED_OUT34)
+		);
+		
+	//PRED_OUT41
+	wire [7:0]	ref41_1,ref41_2;
+	wire [7:0]	ref41_1a,ref41_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u41(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_41),
+		.TOP_or_LEFT2(TOP_or_LEFT2_41),
+		.ADDR_R1(ADDR1_41),
+		.ADDR_R2(ADDR2_41),
+		
+		.REF1(ref41_1),
+		.REF2(ref41_2),
+		.REF1a(ref41_1a),
+		.REF2a(ref41_2a)
+		);
+	PRED_UNIT PRED_UNIT_u41(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_41),
+		.WEIGHT2(WEIGHT2_41),
+		
+		.REF1(ref41_1),
+		.REF2(ref41_2),
+		.REF1a(ref41_1a),
+		.REF2a(ref41_2a),
+		
+		.PRED_OUT(PRED_OUT41)
+		);
+		
+	//PRED_OUT42
+	wire [7:0]	ref42_1,ref42_2;
+	wire [7:0]	ref42_1a,ref42_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u42(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_42),
+		.TOP_or_LEFT2(TOP_or_LEFT2_42),
+		.ADDR_R1(ADDR1_42),
+		.ADDR_R2(ADDR2_42),
+		
+		.REF1(ref42_1),
+		.REF2(ref42_2),
+		.REF1a(ref42_1a),
+		.REF2a(ref42_2a)
+		);
+	PRED_UNIT PRED_UNIT_u42(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_42),
+		.WEIGHT2(WEIGHT2_42),
+		
+		.REF1(ref42_1),
+		.REF2(ref42_2),
+		.REF1a(ref42_1a),
+		.REF2a(ref42_2a),
+		
+		.PRED_OUT(PRED_OUT42)
+		);
+		
+	//PRED_OUT43
+	wire [7:0]	ref43_1,ref43_2;
+	wire [7:0]	ref43_1a,ref43_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u43(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_43),
+		.TOP_or_LEFT2(TOP_or_LEFT2_43),
+		.ADDR_R1(ADDR1_43),
+		.ADDR_R2(ADDR2_43),
+		
+		.REF1(ref43_1),
+		.REF2(ref43_2),
+		.REF1a(ref43_1a),
+		.REF2a(ref43_2a)
+		);
+	PRED_UNIT PRED_UNIT_u43(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_43),
+		.WEIGHT2(WEIGHT2_43),
+		
+		.REF1(ref43_1),
+		.REF2(ref43_2),
+		.REF1a(ref43_1a),
+		.REF2a(ref43_2a),
+		
+		.PRED_OUT(PRED_OUT43)
+		);
+		
+	//PRED_OUT44
+	wire [7:0]	ref44_1,ref44_2;
+	wire [7:0]	ref44_1a,ref44_2a;
+	REF_SEL_UNIT RES_SEL_UNIT_u44(
+		.REF_TOP0(REF_TOP0),
+		.REF_TOP1(REF_TOP1),
+		.REF_TOP2(REF_TOP2),
+		.REF_TOP3(REF_TOP3),
+		.REF_TOP4(REF_TOP4),
+		.REF_TOP5(REF_TOP5),
+		.REF_TOP6(REF_TOP6),
+		.REF_TOP7(REF_TOP7),
+		
+		.REF_TOP0a(REF_TOP0a),
+		.REF_TOP1a(REF_TOP1a),
+		.REF_TOP2a(REF_TOP2a),
+		.REF_TOP3a(REF_TOP3a),
+		.REF_TOP4a(REF_TOP4a),
+		.REF_TOP5a(REF_TOP5a),
+		.REF_TOP6a(REF_TOP6a),
+		.REF_TOP7a(REF_TOP7a),
+		
+		.REF_LEFT0(REF_LEFT0),
+		.REF_LEFT1(REF_LEFT1),
+		.REF_LEFT2(REF_LEFT2),
+		.REF_LEFT3(REF_LEFT3),
+		.REF_LEFT4(REF_LEFT4),
+		.REF_LEFT5(REF_LEFT5),
+		.REF_LEFT6(REF_LEFT6),
+		.REF_LEFT7(REF_LEFT7),
+		
+		.REF_LEFT0a(REF_LEFT0a),
+		.REF_LEFT1a(REF_LEFT1a),
+		.REF_LEFT2a(REF_LEFT2a),
+		.REF_LEFT3a(REF_LEFT3a),
+		.REF_LEFT4a(REF_LEFT4a),
+		.REF_LEFT5a(REF_LEFT5a),
+		.REF_LEFT6a(REF_LEFT6a),
+		.REF_LEFT7a(REF_LEFT7a),
+		
+		.TOP_or_LEFT1(TOP_or_LEFT1_44),
+		.TOP_or_LEFT2(TOP_or_LEFT2_44),
+		.ADDR_R1(ADDR1_44),
+		.ADDR_R2(ADDR2_44),
+		
+		.REF1(ref44_1),
+		.REF2(ref44_2),
+		.REF1a(ref44_1a),
+		.REF2a(ref44_2a)
+		);
+	PRED_UNIT PRED_UNIT_u44(
+		.PU(PU),
+		.angle_or_planar(angle_or_planar),
+		.WEIGHT1(WEIGHT1_44),
+		.WEIGHT2(WEIGHT2_44),
+		
+		.REF1(ref44_1),
+		.REF2(ref44_2),
+		.REF1a(ref44_1a),
+		.REF2a(ref44_2a),
+		
+		.PRED_OUT(PRED_OUT44)
+		);
+		
+endmodule
+		

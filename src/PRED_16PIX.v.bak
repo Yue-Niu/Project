@@ -1,0 +1,6 @@
+/*
+	这个模块通过例化PRED_CALC来预测16个像素
+*/
+module PRED_16PIX
+(
+	input )

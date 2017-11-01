@@ -1,0 +1,146 @@
+//This is a test top level module
+
+module intra_test
+(
+	input 			clk,
+	input				rst_n,
+	input				vh_i,
+	input				negetive_flag,
+	
+	input [8:0]		address1,
+	//input [8:0]		address2,
+	
+	output 			en_top,
+	output			en_left,
+	output [7:0]	address_RAM
+	
+);
+	//controller
+	wire en1, en2, preset_flag;
+	angle_control angle_control_u(
+		.clk(clk1),
+		.rst_n(rst_n),
+		.restart(1'b0),
+		
+		.en1(en1),
+		.en2(en2)
+		);
+
+	address_gen_control address_gen_control_u(
+		.clk(clk),
+		.finish(finish),
+		.rst_n(rst_n),
+		.en1(en1),
+		
+		.preset_flag(preset_flag)
+		);
+	//internal wire for index_LUT
+	wire [7:0] index_LUT_out1, index_LUT_out2, index_LUT_out3, index_LUT_out4;
+	index_LUT index_LUT_u(
+		.clk(clk1),
+		.address(address1),
+		
+		.LUT_out1(index_LUT_out1),
+		.LUT_out2(index_LUT_out2),
+		.LUT_out3(index_LUT_out3),
+		.LUT_out4(index_LUT_out4)
+		);
+	
+	//internal wire for weight LUT
+	wire [7:0] weight_LUT_out1, weight_LUT_out2, weight_LUT_out3, weight_LUT_out4;
+	weight_LUT weight_LUT_u(
+		.clk(clk1),
+		.address(address1),
+		
+		.LUT_out1(weight_LUT_out1),
+		.LUT_out2(weight_LUT_out2),
+		.LUT_out3(weight_LUT_out3),
+		.LUT_out4(weight_LUT_out4)
+		);
+		
+	//internal wire for index_aux LUT
+	wire [7:0]	index_aux_out1, index_aux_out2, index_aux_out3, index_aux_out4;
+	index_aux_LUT index_aux_LUT_u(
+		.clk(clk1),
+		.address(address1),
+		
+		.LUT_out1(index_aux_out1),
+		.LUT_out2(index_aux_out2),
+		.LUT_out3(index_aux_out3),
+		.LUT_out4(index_aux_out4)
+		);
+		
+	//ref address
+	wire top_or_left11,top_or_left14,top_or_left41,top_or_left44;
+	wire [7:0] address11, address14, address41, address44;
+	ref_address ref_address_u(
+		.vh_i(1'b1),
+		
+		.index1(index_LUT_out1),
+		.index2(index_LUT_out2),
+		.index3(index_LUT_out3),
+		.index4(index_LUT_out4),
+		.index_aux1(index_aux_out1),
+		.index_aux2(index_aux_out2),
+		.index_aux3(index_aux_out3),
+		.index_aux4(index_aux_out4),
+		
+		.X(8'd0),
+		.Y(8'd0),
+		
+		.top_or_left11(top_or_left11),
+		.top_or_left14(top_or_left14),
+		.top_or_left41(top_or_left41),
+		.top_or_left44(top_or_left44),
+		.address11(address11),
+		.address12(),
+		.address13(),
+		.address14(address14),
+		.address21(),
+		.address22(),
+		.address23(),
+		.address24(),
+		.address31(),
+		.address32(),
+		.address33(),
+		.address34(),
+		.address41(address41),
+		.address42(),
+		.address43(),
+		.address44(address44)
+		);
+		
+	// divide clk to clk1
+	//wire clk1;
+	clk2clk1 clk2clk1_u(
+		.clk(clk),
+		.rst_n(rst_n),
+		
+		.clk1(clk1),
+		.finish(finish)
+		);
+		
+	//address abitrate
+	address_abitrate address_abitrate_u(
+		.clk1(clk),
+		.rst_n(rst_n),
+		.vh_i(vh_i),
+		.en(en1),
+		.preset_flag(preset_flag),
+		.negetive_flag(negetive_flag),
+			
+		.top_or_left11(top_or_left11),
+		.top_or_left14(top_or_left14),
+		.top_or_left41(top_or_left41),
+		.top_or_left44(top_or_left44),
+		.address11(address11),
+		.address14(address14),
+		.address41(address41),
+		.address44(address44),
+			
+		.address_RAM(address_RAM),
+		.en_top(en_top),
+		.en_left(en_left)
+		);
+		
+endmodule
